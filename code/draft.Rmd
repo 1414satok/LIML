@@ -1,0 +1,103 @@
+```{r setup}
+library(tidyverse)
+library(dplyr)
+library(MASS)
+library(AER)
+library(coefplot)
+```
+
+# 普通のiv法
+```{r}
+gen_data <- function(N, nX, nW, nZ, beta){
+  u <- rnorm(N)
+  v <- rnorm(N)
+  Z <- rnorm(N * nZ) %>% 
+    array(dim = c(N, nZ)) %>% 
+    cbind(1, .)
+  gamma <- array(rnorm(nX * (nZ + 1)), dim = c(nZ + 1, nX))
+  X <- Z %*% gamma + u + v
+  W <- rnorm(N * nW) %>% 
+    array(dim = c(N, nW)) %>% 
+    cbind(1, .)
+  XW <- cbind(X, W)
+  y <- XW %*% array(beta, dim = c(nX + nW + 1, 1)) + u
+  data <-  cbind(y, XW, Z, u, v) %>% 
+    as.data.frame()
+  col_names <- c("y", 
+                 lapply(1:nX, FUN = function(i){paste("X", i, sep = "")}),
+                 lapply(0:nW, FUN = function(i){paste("W", i, sep = "")}),
+                 lapply(0:nZ, FUN = function(i){paste("Z", i, sep = "")}))
+  colnames(data) <- col_names
+  output <- c()
+  output$data <- data
+  output$y <- y
+  output$X <- X
+  output$W <- W
+  output$Z <- Z
+  output$beta <- beta
+  output$gamma <- gamma
+  output$u <- u
+  output$v <- v
+  return(output)
+}
+```
+
+```{r}
+data <- gen_data(1000, 2, 2, 5, 1)
+resultIV <- ivreg(y ~ X1 + X2 + W1 + W2 | Z1 + Z2 + Z3 + Z4 + Z5, data = data$data)
+coefplot(resultIV) + xlim(-3, 3) + geom_vline(xintercept = 1)
+```
+
+
+```{r}
+gen_data_weak <- function(N, nX, nW, nZ1, nZ2, beta){
+  u <- rnorm(N)
+  v <- rnorm(N)
+  nZ <- nZ1 + nZ2
+  Z1 <- rnorm(N * nZ1) %>% 
+    array(dim = c(N, nZ1)) %>% 
+    cbind(1, .)
+  Z2 <- rnorm(N * nZ2) %>% 
+    array(dim = c(N, nZ2))
+  Z <- cbind(Z1, Z2)
+  gamma <- array(rnorm(nX * (nZ1 + 1)), dim = c(nZ1 + 1, nX))
+  X <- Z1 %*% gamma + u + v
+  W <- rnorm(N * nW) %>% 
+    array(dim = c(N, nW)) %>% 
+    cbind(1, .)
+  XW <- cbind(X, W)
+  y <- XW %*% array(beta, dim = c(nX + nW + 1, 1)) + u
+  data <-  cbind(y, XW, Z, u, v) %>% 
+    as.data.frame()
+  col_names <- c("y", 
+                 lapply(1:nX, FUN = function(i){paste("X", i, sep = "")}),
+                 lapply(0:nW, FUN = function(i){paste("W", i, sep = "")}),
+                 lapply(0:nZ, FUN = function(i){paste("Z", i, sep = "")}))
+  colnames(data) <- col_names
+  output <- c()
+  output$data <- data
+  output$y <- y
+  output$X <- X
+  output$W <- W
+  output$Z <- Z
+  output$beta <- beta
+  output$gamma <- gamma
+  output$u <- u
+  output$v <- v
+  return(output)
+}
+```
+
+```{r}
+data_weak <- gen_data_weak(1000, 2, 2, 10, 9, 1)
+resultIVweak <- ivreg(y ~ X1 + X2 + W1 + W2 |
+                        Z1 + Z2 + Z3 + Z4 + Z5 + Z6 + Z7 + Z8 + Z9 + Z10, 
+                      data = data_weak$data)
+coefplot(resultIVweak) + geom_vline(xintercept = 1)
+```
+
+# 同時決定のデータ
+```{r}
+
+```
+
