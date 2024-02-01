@@ -1,28 +1,73 @@
-# LIML
+\documentclass[a4paper, 12pt]{ltjsarticle}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{luatexja} % Required for Japanese text
+\usepackage{mathrsfs}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=black, 
+    citecolor=black,
+    urlcolor=black
+    }
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{rotating}
+\usepackage{mathrsfs}
+\usepackage{arydshln}
+\usepackage{wrapfig}
+\usepackage{caption}
+\usepackage[subrefformat=parens]{subcaption}
+\captionsetup{compatibility=false}
+\usepackage{multirow}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage[
+  style=authoryear,
+  sorting=nyt,
+  isbn=false,
+  url=false,
+  doi=false,
+  eprint=false,
+  maxcitenames=2,
+  maxbibnames=99,
+  backend=biber
+  ]{biblatex}
+\renewcommand{\figurename}{図}
+\renewcommand{\tablename}{表}
+%addbibresource{input/.bib}
+\renewbibmacro{in:}{}
+\DeclareFieldFormat{pages}{#1}
+
+\title{LIML推定量の導入}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
 以下の同時方程式を考える。
-```math
+\begin{align}
   \begin{cases}
     y_1 = \alpha_1 + \gamma_1 y_2 + \delta_1 x_1 + \epsilon_1 \\
     y_2 = \alpha_2 + \gamma_2 y_1 + \delta_2 x_2 + \epsilon_2
   \end{cases}
-```
+\end{align}
 
 この式を$y_1, y_2$について解くと、
-```math
+\begin{align}
   \begin{cases}
     y_1 = \frac{1}{1 - \gamma_1 \gamma_2} (\alpha_1 + \gamma_1 \alpha_2 + \delta_1 x_1 + \gamma_1 \delta_2 x_2 + \epsilon_1 + \gamma_1 \epsilon_2) \\
     y_2 = \frac{1}{1 - \gamma_1 \gamma_2} (\alpha_2 + \gamma_2 \alpha_1 + \gamma_2 \delta_1 x_1 + \delta_2 x_2 + \epsilon_2 + \gamma_2 \epsilon_1)
   \end{cases}
-```
+\end{align}
 となる。さらに、行列を用いて表すと、
-```math
+\begin{align}
   \vec{y}=\begin{pmatrix}
     \lambda\\
     \Gamma
   \end{pmatrix}X + e
-```
+\end{align}
 where
-```math
 \begin{eqnarray*}
   \vec{y}&=&\begin{pmatrix}
     y_1\\
@@ -49,13 +94,11 @@ where
     \epsilon_2 + \gamma_2 \epsilon_1
   \end{pmatrix}
 \end{eqnarray*}
-```
 これをさらに
-```math
+\begin{align}
   \vec{y}=\Pi_0^{\prime}+\Pi_1^{\prime}x_1+\Pi_2^{\prime}x_2+e
-```
+\end{align}
 where
-```math
 \begin{eqnarray*}
   \Pi_0&=&\begin{pmatrix}
     \frac{\alpha_1+\gamma_1 \alpha_2}{1-\gamma_1 \gamma_2}&
@@ -70,12 +113,13 @@ where
     \frac{\delta_2}{1-\gamma_1 \gamma_2}
   \end{pmatrix}
 \end{eqnarray*}
-```
 と書き直す。このとき、$\Pi_2$に対して
-```math
+\begin{align}
   \Pi_2\gamma=0\qquad\text{where}\quad\gamma=\begin{pmatrix}
     1\\
     -\gamma_1
   \end{pmatrix}
-```
+\end{align}
 が成り立つ。
+
+\end{document}

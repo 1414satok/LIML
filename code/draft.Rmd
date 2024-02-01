@@ -98,6 +98,63 @@ coefplot(resultIVweak) + geom_vline(xintercept = 1)
 
 # 同時決定のデータ
 ```{r}
+gen_se_data <- function(N, sigma12 = 0.5){
+  # y1 = alpha1 + gamma1 * y2 + X1 %*% beta1 + u1
+  # y2 = alpha2 + gamma2 * y1 + X2 %*% beta2 + u2
+  alpha1 <- 1
+  alpha2 <- 1
+  gamma1 <- 1
+  gamma2 <- -1
+  beta1 <- 1
+  beta2 <- 1
+  u <- mvrnorm(n = N, c(0, 0), Sigma = matrix(c(1, sigma12, sigma12, 1), 2, 2))
+  u1 <- u[,1]
+  u2 <- u[,2]
+  X1 <- matrix(rnorm(N))
+  X2 <- matrix(rnorm(N))
+  y2 <- (gamma2 * (alpha1 + beta1 * X1 + u1) + alpha2 + beta2 * X2 + u2) / (1 - gamma1 * gamma2)
+  y1 <- alpha1 + gamma1 * y2 + beta1 * X1 + u1
 
+  data <- tibble(
+    "y1" = y1[,1],
+    "y2" = y2[,1],
+    "x1" = X1[,1],
+    "x2" = X2[,1]
+  )
+  return(data)
+}
+gen_se_data(10)
+```
+
+```{r}
+data <- gen_se_data(1000)
+```
+
+```{r}
+resultOLS <- lm(y1 ~ y2, data = data)
+coefplot(resultOLS) + geom_vline(xintercept = 1)
+```
+
+```{r}
+resultIV <- ivreg(y1 ~ y2 | x2, data = data)
+coefplot(resultIV) + geom_vline(xintercept = 1)
+```
+
+```{r}
+resultReduced1 <- lm(y1 ~ x1 + x2, data = data)
+coefplot(resultReduced1) + geom_vline(xintercept = c(0.5, 1))
+```
+
+```{r}
+resultReduced2 <- lm(y2 ~ x1 + x2, data = data)
+coefplot(resultReduced2) + geom_vline(xintercept = c(-0.5, 0.5))
+```
+
+```{r}
+gen_se_data <- function(N){
+  # y1 = alpha1 + lambda1 * z1 + lambda2 * z2 + u1
+  # y2 = alpha2 + gamma1 * z1 + gamma2 * z2 + u2
+  
+}
 ```
 
